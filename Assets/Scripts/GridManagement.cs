@@ -50,6 +50,24 @@ public class GridManagement : MonoBehaviour
         currentRoot = startRoot;
         scorePerLevel = new List<int>();
 
+        for (int n = tileMap.cellBounds.xMin; n < tileMap.cellBounds.xMax; n++)
+        {
+            for (int p = tileMap.cellBounds.yMin; p < tileMap.cellBounds.yMax; p++)
+            {
+                Vector3Int localPlace = (new Vector3Int(n, p, (int)tileMap.transform.position.y));
+                Vector3 place = tileMap.CellToWorld(localPlace);
+                if (tileMap.HasTile(localPlace))
+                {
+                    //Tile at "place"
+                    
+                }
+                else
+                {
+                    //No tile at "place"
+                }
+            }
+        }
+
     }
 
     // Update is called once per frame
@@ -374,7 +392,8 @@ public class GridManagement : MonoBehaviour
         if (ButtonPressed == false)
         {
 
-
+            
+            
             //Debug.Log(position);
             
             //objectMapping.SetTile(position, pointer);
