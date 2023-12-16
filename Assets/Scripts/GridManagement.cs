@@ -38,6 +38,8 @@ public class GridManagement : MonoBehaviour
     public TileBase rightWallRoot;
     public TileBase pointer;
 
+    public string[] tileNames;
+
    
 
     void Start()
@@ -50,8 +52,8 @@ public class GridManagement : MonoBehaviour
         currentRoot = startRoot;
         scorePerLevel = new List<int>();
 
-        
 
+        
     }
 
     // Update is called once per frame
@@ -193,18 +195,92 @@ public class GridManagement : MonoBehaviour
         ButtonPressed = true;
         return "Void";
     }
-
     
-    Vector3Int GetRow(Tilemap mapping, Vector3Int position, int start, int end, bool add, bool vert, bool rootTime)
+
+    Vector3Int DetermineCondition(Tilemap mapping, string result, Vector3Int newPosition)
+    {
+        if (result == "Stone")
+        {
+
+            
+            if (Angle == "LEFT")
+            {
+                 
+                mapping.SetTile(newPosition, leftWallRoot);
+            }
+            else if (Angle == "RIGHT")
+            {
+                
+                mapping.SetTile(newPosition, rightWallRoot);
+            }
+
+  
+            return newPosition;
+        }
+        else if (result == "Win")
+        {
+            // Move to Next Level
+            NextLevel();
+            
+        }
+        else if (result == "Reset")
+        {
+
+            ResetLevel();
+            
+        }
+
+        return new Vector3Int(999, 999, 999);
+    }
+
+    //Vector3Int GetRow(Tilemap mapping, Vector3Int position, int start, int end, bool add, bool vert, bool rootTime)
+    Vector3Int GetRow(Tilemap mapping, Vector3Int position, string command)
     {
         StartCoroutine(ButtonPressedMethod());
-        Vector3Int newPosition = position;
-        Vector3Int passedPosition = position;
-        //bool foundNewSprout = false;
+        Vector3Int newPotentialPosition;
 
-        
+        Debug.Log(position);
 
-        if (add == true)
+        /*
+         * The code takes in a position, then it uses a while loop to keep checking the new position. 
+         * If the tile is empty, then it adds to it.
+         */
+        bool growRoot = true;
+
+        while (growRoot)
+        {
+            if (command == "up")
+            {
+                // It adds one to the current position.
+                newPotentialPosition = position + new Vector3Int(0, 1, 0); 
+
+                TileBase unknownObject = objectMapping.GetTile(newPotentialPosition);
+                TileBase backgroundTile = mapping.GetTile(newPotentialPosition);
+                // It checks to see if there is a tile present.
+
+                if (unknownObject)
+                {
+                    // An object is found, then check what kind it is.
+
+                    string objectResult = CheckTile(unknownObject, mapping, newPotentialPosition);
+                    position = DetermineCondition(mapping, objectResult, newPotentialPosition);
+                } 
+
+                if (backgroundTile)
+                {
+                    string backgroundResult = CheckTile(unknownObject, mapping, newPotentialPosition);
+                    position = DetermineCondition(mapping, backgroundResult, newPotentialPosition);
+                }
+
+                break;
+                
+            }
+        }
+        Debug.Log(position);
+
+        return position;
+
+        /*if (add == true)
         {
    
             for (int value = start; value < end; value++) // UP AND RIGHT CODE
@@ -216,16 +292,14 @@ public class GridManagement : MonoBehaviour
                     
                     newPosition = position + new Vector3Int(0, value, 0);
                     Angle = "UP";
-                    Debug.Log("GET ROW | Going up");
+                    
                 }
                 else
                 {
                     // This is going to the right
                     newPosition = position + new Vector3Int(value, 0, 0);
                     Angle = "RIGHT";
-                    Debug.Log("GET ROW | Going to the right");
-                    
-                    
+
                 }
                 
 
@@ -235,12 +309,12 @@ public class GridManagement : MonoBehaviour
 
                 if (unknownTile)
                 {
-                    Debug.Log("Found object tile");
+                    
                     string result = CheckTile(unknownTile, mapping, newPosition);
 
                     if (result == "Stone")
                     {
-                        Debug.Log("Stopping");
+                        
                         //return newPosition;
                         if (Angle == "LEFT")
                         {
@@ -252,7 +326,7 @@ public class GridManagement : MonoBehaviour
                             newPosition = newPosition - new Vector3Int(1, 0, 0);
                             mapping.SetTile(newPosition, rightWallRoot);
                         }
-                        Debug.Log(passedPosition);
+                        
                         passedPosition = newPosition;
 
                         return passedPosition;
@@ -262,7 +336,7 @@ public class GridManagement : MonoBehaviour
                         NextLevel();
                     } else if (result == "Reset")
                     {
-                        Debug.Log("Test");
+                
                         ResetLevel();
                     }
                 }
@@ -272,7 +346,7 @@ public class GridManagement : MonoBehaviour
                     string result = CheckTile(backgroundTile, mapping, newPosition);
                     if (result == "NewRoot")
                     {
-                        Debug.Log("Found wall");
+                        
                         passedPosition = newPosition;
                     }
                 }
@@ -285,7 +359,7 @@ public class GridManagement : MonoBehaviour
         } else if (add == false) // DOWN AND LEFT CODE
         {
 
-            Debug.Log("Do method");
+           
             for (int value = start; value < end; value++)
             {
   
@@ -294,7 +368,7 @@ public class GridManagement : MonoBehaviour
                     // This is going to head down 
                     newPosition = position - new Vector3Int(0, value, 0);
                     Angle = "DOWN";
-                    Debug.Log("Down angle");
+                    
                     
                 }
                 else
@@ -302,7 +376,7 @@ public class GridManagement : MonoBehaviour
                     // This is going to the left
                     newPosition = position - new Vector3Int(value, 0, 0);
                     Angle = "LEFT";
-                    Debug.Log("Going left");
+                    
                     
                 }
 
@@ -335,11 +409,11 @@ public class GridManagement : MonoBehaviour
 
                 if (backgroundTile)
                 {
-                    Debug.Log("Found background tile");
+                    
                     string result = CheckTile(backgroundTile, mapping, newPosition);
                     if (result == "NewRoot")
                     {
-                        Debug.Log("Found wall");
+                       
                         passedPosition = newPosition;
                     }
 
@@ -350,14 +424,9 @@ public class GridManagement : MonoBehaviour
                 }
             }
         }
+        */
+        //return passedPosition;
 
-        
-        Debug.Log("Passed position is " + passedPosition);
-        return passedPosition;
-       
-
-        
-        
     }
 
     void Update()
@@ -378,34 +447,37 @@ public class GridManagement : MonoBehaviour
 
             
             
-            //Debug.Log(position);
             
             //objectMapping.SetTile(position, pointer);
             if (xAxisValue > 0)
             { // Go Right
-                //currentRoot = GetRow(mapping, position, 0, bounds.size.x, true, false, false);
-                Debug.Log("Pressed right");
-                currentRoot = GetRow(mapping, position, position.x, bounds.size.x, true, false, false);
+
+                Debug.Log("Right");
+
+                //currentRoot = GetRow(mapping, position, position.x, bounds.size.x, true, false, false);
             }
 
             else if (xAxisValue < 0)
             { // Go Left
-                //currentRoot = GetRow(mapping, position, bounds.size.x, 0, false, false, false);
-                currentRoot = GetRow(mapping, position, bounds.size.x, position.x, false, false, false);
+                Debug.Log("Left");
+ 
+                //currentRoot = GetRow(mapping, position, bounds.size.x, position.x, false, false, false);
             }
 
             else if (yAxisValue > 0)
             { // Go Up
-                Debug.Log("Pressed up");
-                //currentRoot = GetRow(mapping, position, 0, bounds.size.y, true, true, false);
-                currentRoot = GetRow(mapping, position, position.y, bounds.size.y, true, true, false);
+                Debug.Log("Up");
+
+                GetRow(mapping, position, "up");
+
+                //currentRoot = GetRow(mapping, position, position.y, bounds.size.y, true, true, false);
             }
 
             else if (yAxisValue < 0)
             { // Go Down
+                Debug.Log("Down");
                 
-                //currentRoot = GetRow(mapping, position, bounds.size.y, 0, false, true, false);
-                currentRoot = GetRow(mapping, position, position.y, bounds.size.y, false, true, false);
+                //currentRoot = GetRow(mapping, position, position.y, bounds.size.y, false, true, false);
                 
             }
             
