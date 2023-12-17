@@ -40,7 +40,9 @@ public class GridManagement : MonoBehaviour
 
     public string[] tileNames;
 
-   
+    public Vector3Int position;
+
+
 
     void Start()
     {
@@ -268,7 +270,9 @@ public class GridManagement : MonoBehaviour
 
                 if (backgroundTile)
                 {
-                    string backgroundResult = CheckTile(unknownObject, mapping, newPotentialPosition);
+                    // Background tile found.
+
+                    string backgroundResult = CheckTile(backgroundTile, mapping, newPotentialPosition);
                     position = DetermineCondition(mapping, backgroundResult, newPotentialPosition);
                 }
 
@@ -276,7 +280,7 @@ public class GridManagement : MonoBehaviour
                 
             }
         }
-        Debug.Log(position);
+        
 
         return position;
 
@@ -438,7 +442,7 @@ public class GridManagement : MonoBehaviour
         //Vector3 worldPoint = ray.GetPoint(-ray.origin.z / ray.direction.z);
 
         Tilemap mapping = GetComponent<Tilemap>();
-        Vector3Int position = mapping.WorldToCell(currentRoot);
+        position = mapping.WorldToCell(currentRoot);
 
         pointTrackerText.text = points.ToString();
 
@@ -468,7 +472,7 @@ public class GridManagement : MonoBehaviour
             { // Go Up
                 Debug.Log("Up");
 
-                GetRow(mapping, position, "up");
+                currentRoot = GetRow(mapping, position, "up");
 
                 //currentRoot = GetRow(mapping, position, position.y, bounds.size.y, true, true, false);
             }
