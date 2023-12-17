@@ -90,11 +90,9 @@ public class GridManagement : MonoBehaviour
     string CheckTile(TileBase tile, Tilemap backgroundMap, Vector3Int newPosition)
     {
 
-
         if (newPosition.x > position.x)
         {
             // It is going to the right
-
             Angle = "RIGHT";
         } else if (newPosition.x < position.x)
         {
@@ -106,41 +104,43 @@ public class GridManagement : MonoBehaviour
         {
             Angle = "DOWN";
         }
-
-        Debug.Log("ANGLE " + Angle);
         
-        Debug.Log("Checking tile: " + tile.name + " at " + newPosition);
+        Debug.Log("Checking tile: " + tile.name + " at " + newPosition + " with angle " + Angle);
         
-        if (tile.name == "StoneWallTopBottom")
-        {
-            Debug.Log("Hit stone wall");
-            
-            return "Stone";
-        } else if (tile.name == "WaterDropletPoints")
+        if (tile.name == "WaterDropletPoints")
         {
             points = points + 100;
-            Debug.Log("Water points added!");
+
             objectMapping.SetTile(position, null);
         } else if (tile.name == "WaterPool")
         {
             points = points + 500;
-            Debug.Log("Found water source!");
 
             return "Win";
         } else if (tile.name == "RockSalt")
         {
-            Debug.Log("Root killed!");
             return "Reset";
         } else if (tile.name == "FlowerIncomplete")
         {
-            Debug.Log("Flower found");
-        }
 
+        }
+        
+
+       /*tile.name == "StoneWallTopBottom")
+        {
+            Debug.Log("Hit stone wall");
+
+            return "Stone";
+        } else*/
         if (backgroundMap != null)
         {
-            if (tile.name == "DefaultTile" || tile.name == "DefaultTileWall" || tile.name == "TopDefaultTileWall" || tile.name == "BottomDefaultTileWall")
+            if (tile.name == "StoneWallTopBottom")
             {
-                Debug.Log("Root sprout at: " + newPosition);
+                return "Stone";
+            }
+            else if (tile.name == "DefaultTile" || tile.name == "DefaultTileWall" || tile.name == "TopDefaultTileWall" || tile.name == "BottomDefaultTileWall" )
+            {
+                
                 if (Angle == "RIGHT")
                 {
                     
@@ -154,10 +154,9 @@ public class GridManagement : MonoBehaviour
                 {
                     
                     backgroundMap.SetTile(newPosition, straightRoot);
-                } else
-                {
-                    Debug.Log("Tested out");
-                }
+                } 
+
+                
 
             }
             else if (tile.name == "RightDefaultTileWall")
@@ -226,15 +225,16 @@ public class GridManagement : MonoBehaviour
             if (Angle == "LEFT")
             {
                  
-                mapping.SetTile(newPosition, leftWallRoot);
+                mapping.SetTile(position, leftWallRoot);
             }
             else if (Angle == "RIGHT")
             {
                 
-                mapping.SetTile(newPosition, rightWallRoot);
+                mapping.SetTile(position, rightWallRoot);
             }
 
-  
+            Debug.Log("Position that was passed " + newPosition + " and current position: " + position);
+            newPosition = position;
             
         }
         else if (result == "Win")
@@ -261,6 +261,7 @@ public class GridManagement : MonoBehaviour
 
     Vector3Int NewPositionMethod(Tilemap mapping, int x, int y)
     {
+        Debug.Log("Changing position by " + x + " and " + y);
         // It adds one to the current position.
         Vector3Int newPotentialPosition;
         newPotentialPosition = position + new Vector3Int(x, y, 0);
@@ -274,7 +275,7 @@ public class GridManagement : MonoBehaviour
             // An object is found, then check what kind it is.
 
             string objectResult = CheckTile(unknownObject, mapping, newPotentialPosition);
-            position = DetermineCondition(mapping, objectResult, newPotentialPosition);
+            DetermineCondition(mapping, objectResult, newPotentialPosition);
         }
 
         if (backgroundTile)
@@ -338,156 +339,9 @@ public class GridManagement : MonoBehaviour
                 
             }  */
         }
-        
 
+        Debug.Log("Final position is: " + position);
         return position;
-
-        /*if (add == true)
-        {
-   
-            for (int value = start; value < end; value++) // UP AND RIGHT CODE
-            {
-                
-                if (vert)
-                {
-                    // This is going to head up 
-                    
-                    newPosition = position + new Vector3Int(0, value, 0);
-                    Angle = "UP";
-                    
-                }
-                else
-                {
-                    // This is going to the right
-                    newPosition = position + new Vector3Int(value, 0, 0);
-                    Angle = "RIGHT";
-
-                }
-                
-
-                TileBase unknownTile = objectMapping.GetTile(newPosition);
-                TileBase backgroundTile = mapping.GetTile(newPosition);
-
-
-                if (unknownTile)
-                {
-                    
-                    string result = CheckTile(unknownTile, mapping, newPosition);
-
-                    if (result == "Stone")
-                    {
-                        
-                        //return newPosition;
-                        if (Angle == "LEFT")
-                        {
-                            newPosition = newPosition + new Vector3Int(1, 0, 0);
-                            mapping.SetTile(newPosition, leftWallRoot);
-                        }
-                        else if (Angle == "RIGHT")
-                        {
-                            newPosition = newPosition - new Vector3Int(1, 0, 0);
-                            mapping.SetTile(newPosition, rightWallRoot);
-                        }
-                        
-                        passedPosition = newPosition;
-
-                        return passedPosition;
-                    } else if (result == "Win")
-                    {
-                        // Move to Next Level
-                        NextLevel();
-                    } else if (result == "Reset")
-                    {
-                
-                        ResetLevel();
-                    }
-                }
-
-                if (backgroundTile)
-                {
-                    string result = CheckTile(backgroundTile, mapping, newPosition);
-                    if (result == "NewRoot")
-                    {
-                        
-                        passedPosition = newPosition;
-                    }
-                }
-                else
-                {
-                    
-                    return passedPosition;
-                }
-            }
-        } else if (add == false) // DOWN AND LEFT CODE
-        {
-
-           
-            for (int value = start; value < end; value++)
-            {
-  
-                if (vert)
-                {
-                    // This is going to head down 
-                    newPosition = position - new Vector3Int(0, value, 0);
-                    Angle = "DOWN";
-                    
-                    
-                }
-                else
-                {
-                    // This is going to the left
-                    newPosition = position - new Vector3Int(value, 0, 0);
-                    Angle = "LEFT";
-                    
-                    
-                }
-
-                TileBase unknownTile = objectMapping.GetTile(newPosition);
-                TileBase backgroundTile = mapping.GetTile(newPosition);
-
- 
-
-                if (unknownTile)
-                {
-                    string result = CheckTile(unknownTile, mapping, newPosition);
-                    if (result == "Stone")
-                    {
-                        //return newPosition;
-                        return passedPosition;
-                    }
-                    else if (result == "Win")
-                    {
-                        // Move to Next Level
-                        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-                    }
-                    else if (result == "Reset")
-                    {
-                        ResetLevel();
-                    } else
-                    {
-                        
-                    }
-                }
-
-                if (backgroundTile)
-                {
-                    
-                    string result = CheckTile(backgroundTile, mapping, newPosition);
-                    if (result == "NewRoot")
-                    {
-                       
-                        passedPosition = newPosition;
-                    }
-
-                } else
-                {
-                    //objectMapping.SetTile(position, pointer);
-                    return passedPosition;
-                }
-            }
-        }
-        */
-        //return passedPosition;
 
     }
 
@@ -495,9 +349,6 @@ public class GridManagement : MonoBehaviour
     {
         float xAxisValue = Input.GetAxis("Horizontal");
         float yAxisValue = Input.GetAxis("Vertical");
-
-        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //Vector3 worldPoint = ray.GetPoint(-ray.origin.z / ray.direction.z);
 
         Tilemap mapping = GetComponent<Tilemap>();
         position = mapping.WorldToCell(currentRoot);
@@ -507,45 +358,46 @@ public class GridManagement : MonoBehaviour
         if (ButtonPressed == false)
         {
 
+
             
-            
-            
+
             //objectMapping.SetTile(position, pointer);
             if (xAxisValue > 0)
             { // Go Right
 
-                Debug.Log("Right");
-
+                Debug.Log(currentRoot + " vs " + position);
                 currentRoot = GetRow(mapping, position, "right");
 
                 //currentRoot = GetRow(mapping, position, position.x, bounds.size.x, true, false, false);
+                Debug.Log(currentRoot + " vs " + position);
+
             }
 
             else if (xAxisValue < 0)
             { // Go Left
-                Debug.Log("Left");
-
+                Debug.Log(currentRoot + " vs " + position);
                 currentRoot = GetRow(mapping, position, "left");
                 //currentRoot = GetRow(mapping, position, bounds.size.x, position.x, false, false, false);
+                Debug.Log(currentRoot + " vs " + position);
             }
 
             else if (yAxisValue > 0)
             { // Go Up
-                Debug.Log("Up");
-
+                Debug.Log(currentRoot + " vs " + position);
                 currentRoot = GetRow(mapping, position, "up");
 
                 //currentRoot = GetRow(mapping, position, position.y, bounds.size.y, true, true, false);
+                Debug.Log(currentRoot + " vs " + position);
             }
 
             else if (yAxisValue < 0)
             { // Go Down
-                Debug.Log("Down");
-
+                Debug.Log(currentRoot + " vs " + position);
                 currentRoot = GetRow(mapping, position, "down");
                 //currentRoot = GetRow(mapping, position, position.y, bounds.size.y, false, true, false);
-
+                Debug.Log(currentRoot + " vs " + position);
             }
+
             
             
         }
