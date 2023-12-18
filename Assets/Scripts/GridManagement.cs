@@ -51,11 +51,16 @@ public class GridManagement : MonoBehaviour
 
         bounds = mapping.cellBounds;
         allTiles = mapping.GetTilesBlock(bounds);
-        currentRoot = startRoot;
-        scorePerLevel = new List<int>();
-
-
         
+        currentRoot = GetStartingPoint(mapping);
+        //currentRoot = startRoot;
+        scorePerLevel = new List<int>();
+       
+        Debug.Log("Setting worldcell to something " + currentRoot);
+        position = mapping.WorldToCell(currentRoot);
+       
+
+
     }
 
     // Update is called once per frame
@@ -77,14 +82,51 @@ public class GridManagement : MonoBehaviour
         }
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
+        Tilemap mapping = GetComponent<Tilemap>();
+        currentRoot = GetStartingPoint(mapping);
+        position = mapping.WorldToCell(currentRoot);
     }
 
     void NextLevel()
     {
-        currentRoot = new Vector3Int(1, 0, 0);
+        
         scorePerLevel.Add(points);
         points = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        
+        Tilemap mapping = GetComponent<Tilemap>();
+        currentRoot = GetStartingPoint(mapping);
+        position = mapping.WorldToCell(currentRoot);
+    }
+
+    Vector3Int GetStartingPoint(Tilemap mapping)
+    {
+        bounds = mapping.cellBounds;
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
+        {
+            
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
+            {
+                for (int z = bounds.min.z; z < bounds.max.z; z++)
+                {
+                    
+                    TileBase startTile = mapping.GetTile(new Vector3Int(x, y, z));
+                    if (startTile != null)
+                    {
+                        Debug.Log(x + ", " + y);
+                        Debug.Log(startTile.name);
+                        if (startTile.name == "FlowerDirt")
+                        {
+                            Debug.Log("Found starting point");
+                            return new Vector3Int(x, y, z);
+                        }
+                    }
+                    
+                }
+            }
+
+        }
+        return new Vector3Int(99, 99, 99);
     }
 
     string CheckTile(TileBase tile, Tilemap backgroundMap, Vector3Int newPosition)
@@ -111,6 +153,9 @@ public class GridManagement : MonoBehaviour
         {
             points = points + 100;
 
+            Debug.Log("Setting to null");
+
+            //objectMapping
             objectMapping.SetTile(position, null);
         } else if (tile.name == "WaterPool")
         {
@@ -352,10 +397,7 @@ public class GridManagement : MonoBehaviour
 
         Tilemap mapping = GetComponent<Tilemap>();
 
-        if (position == null)
-        {
-            position = mapping.WorldToCell(currentRoot);
-        }
+        
 
         pointTrackerText.text = points.ToString();
 
