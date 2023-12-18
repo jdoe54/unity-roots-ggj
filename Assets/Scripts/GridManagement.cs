@@ -351,7 +351,11 @@ public class GridManagement : MonoBehaviour
         float yAxisValue = Input.GetAxis("Vertical");
 
         Tilemap mapping = GetComponent<Tilemap>();
-        position = mapping.WorldToCell(currentRoot);
+
+        if (position == null)
+        {
+            position = mapping.WorldToCell(currentRoot);
+        }
 
         pointTrackerText.text = points.ToString();
 
