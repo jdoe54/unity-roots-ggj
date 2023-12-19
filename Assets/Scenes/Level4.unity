@@ -386,7 +386,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.2, g: 0.15686275, b: 0.15686275, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -729,6 +729,8 @@ MonoBehaviour:
   leftWallRoot: {fileID: 11400000, guid: a0988da52c276144c859d4013dcdc588, type: 2}
   rightWallRoot: {fileID: 11400000, guid: beada03c8cd24b445b3cca8d4c1549e4, type: 2}
   pointer: {fileID: 11400000, guid: 669cb0621a1a76e4c95b5786175f45a2, type: 2}
+  tileNames: []
+  position: {x: 0, y: 0, z: 0}
 --- !u!483693784 &1190638360
 TilemapRenderer:
   m_ObjectHideFlags: 0
